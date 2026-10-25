@@ -632,6 +632,12 @@ body {
 /* chữ ký cuối trang */
 .credit { position: relative; z-index: 1; max-width: 1000px; margin: 28px auto 0; text-align: right; font: 700 .8rem var(--font-head); letter-spacing: .02em; color: #fff; text-shadow: 0 1px 4px rgba(0, 0, 0, .6), 0 0 8px rgba(255, 138, 175, .6); }
 @media (max-width: 760px) { .credit { font-size: .68rem; margin-top: 20px; } }
+
+/* máy tính: thu nhỏ giao diện còn 80% */
+@media (min-width: 761px) { .page { zoom: .8; } }
+
+/* 3 nút mạng xã hội: canh giữa theo chiều cao ảnh polaroid cho cân đối */
+.a-soc { align-self: center; }
 </style>
 </head>
 <body>
@@ -932,6 +938,22 @@ if(fine&&!calm){
 
 /* Ảnh polaroid: góc xoay ngẫu nhiên nhẹ mỗi lần rê chuột */
 (function(){ var s=document.getElementById('snapBtn'); if(!s)return; s.addEventListener('pointerenter',function(){ s.style.setProperty('--hr',(Math.random()*6-3).toFixed(1)+'deg'); }); })();
+
+/* Cảm ứng: chạm vào thẻ = rê chuột (điện thoại không có :hover thật, nên sao chép các luật :hover của thẻ sang class .hot) */
+(function(){ try{
+var out=[];
+function walk(rules,wrap){ for(var i=0;i<rules.length;i++){ var r=rules[i];
+  if(r.type===1&&r.selectorText&&r.selectorText.indexOf(':hover')>-1){
+    var sel=r.selectorText.split(',').filter(function(x){return /\.(sec|a-hv|a-st|a-mm)\b/.test(x)&&x.indexOf(':hover')>-1;}).map(function(x){return x.replace(/:hover/g,'.hot');});
+    if(sel.length){ var t=sel.join(',')+'{'+r.style.cssText+'}'; out.push(wrap?wrap+'{'+t+'}':t); } }
+  else if(r.type===4&&r.cssRules){ walk(r.cssRules,'@media '+r.conditionText); } } }
+for(var k=0;k<document.styleSheets.length;k++){ try{ walk(document.styleSheets[k].cssRules,''); }catch(e){} }
+var st=document.createElement('style'); st.textContent=out.join('\n'); document.head.appendChild(st);
+document.addEventListener('pointerdown',function(e){ if(e.pointerType==='mouse')return;
+  var c=e.target.closest&&e.target.closest('.sec');
+  document.querySelectorAll('.sec.hot').forEach(function(x){ if(x!==c)x.classList.remove('hot'); });
+  if(c)c.classList.add('hot'); },{passive:true});
+}catch(err){console.error(err);} })();
 
 /* Nhạc nền: lofi tạo bằng Web Audio. Muốn nhạc thật, dán link .mp3 vào SRC bên dưới. */
 (function(){ try{
